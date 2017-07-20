@@ -36,65 +36,65 @@ isProd || levels.push('components/development.blocks');
 module.exports = function(config) {
   config.nodes('bundles/*.bundles/*', function(nodeConfig) {
     nodeConfig.addTechs([
-            // essential
-            [enbBemTechs.levels, { levels: levels }],
-            [techs.fileProvider, { target: '?.bemdecl.js' }],
-            [enbBemTechs.deps],
-            [enbBemTechs.files],
+      // essential
+      [enbBemTechs.levels, { levels: levels }],
+      [techs.fileProvider, { target: '?.bemdecl.js' }],
+      [enbBemTechs.deps],
+      [enbBemTechs.files],
 
-            // css
-            [techs.postcss, {
-              target: '?.css',
-              oneOfSourceSuffixes: ['post.css', 'css'],
-              plugins: techs.postcssPlugins
-            }],
+      // css
+      [techs.postcss, {
+        target: '?.css',
+        oneOfSourceSuffixes: ['post.css', 'css'],
+        plugins: techs.postcssPlugins
+      }],
 
-            // bemtree
-            [techs.bemtree, { sourceSuffixes: ['bemtree', 'bemtree.js'] }],
+      // bemtree
+      [techs.bemtree, { sourceSuffixes: ['bemtree', 'bemtree.js'] }],
 
-            // templates
-            [techs.bemhtml, {
-              sourceSuffixes: ['bemhtml', 'bemhtml.js'],
-              forceBaseTemplates: true,
-              engineOptions: { elemJsInstances: true }
-            }],
+      // templates
+      [techs.bemhtml, {
+        sourceSuffixes: ['bemhtml', 'bemhtml.js'],
+        forceBaseTemplates: true,
+        engineOptions: { elemJsInstances: true }
+      }],
 
-            // client templates
-            [enbBemTechs.depsByTechToBemdecl, {
-              target: '?.tmpl.bemdecl.js',
-              sourceTech: 'js',
-              destTech: 'bemhtml'
-            }],
-            [enbBemTechs.deps, {
-              target: '?.tmpl.deps.js',
-              bemdeclFile: '?.tmpl.bemdecl.js'
-            }],
-            [enbBemTechs.files, {
-              depsFile: '?.tmpl.deps.js',
-              filesTarget: '?.tmpl.files',
-              dirsTarget: '?.tmpl.dirs'
-            }],
-            [techs.bemhtml, {
-              target: '?.browser.bemhtml.js',
-              filesTarget: '?.tmpl.files',
-              sourceSuffixes: ['bemhtml', 'bemhtml.js'],
-              engineOptions: { elemJsInstances: true }
-            }],
+      // client templates
+      [enbBemTechs.depsByTechToBemdecl, {
+        target: '?.tmpl.bemdecl.js',
+        sourceTech: 'js',
+        destTech: 'bemhtml'
+      }],
+      [enbBemTechs.deps, {
+        target: '?.tmpl.deps.js',
+        bemdeclFile: '?.tmpl.bemdecl.js'
+      }],
+      [enbBemTechs.files, {
+        depsFile: '?.tmpl.deps.js',
+        filesTarget: '?.tmpl.files',
+        dirsTarget: '?.tmpl.dirs'
+      }],
+      [techs.bemhtml, {
+        target: '?.browser.bemhtml.js',
+        filesTarget: '?.tmpl.files',
+        sourceSuffixes: ['bemhtml', 'bemhtml.js'],
+        engineOptions: { elemJsInstances: true }
+      }],
 
-            // js
-            [techs.browserJs, { includeYM: true }],
-            [techs.fileMerge, {
-              target: '?.js',
-              sources: ['?.browser.js', '?.browser.bemhtml.js']
-            }],
+      // js
+      [techs.browserJs, { includeYM: true }],
+      [techs.fileMerge, {
+        target: '?.js',
+        sources: ['?.browser.js', '?.browser.bemhtml.js']
+      }],
 
-            // borschik
-            [techs.borschik, { source: '?.js', target: '?.min.js', minify: isProd }],
-            [techs.borschik, { source: '?.css', target: '?.min.css', minify: isProd }],
+      // borschik
+      [techs.borschik, { source: '?.js', target: '?.min.js', minify: isProd }],
+      [techs.borschik, { source: '?.css', target: '?.min.css', minify: isProd }],
 
-            [techs.fileCopy, { source: '?.min.js', target: '../../../static/?.min.js' }],
-            [techs.fileCopy, { source: '?.min.css', target: '../../../static/?.min.css' }]
-            ]);
+      [techs.fileCopy, { source: '?.min.js', target: '../../../static/?.min.js' }],
+      [techs.fileCopy, { source: '?.min.css', target: '../../../static/?.min.css' }]
+    ]);
 
     nodeConfig.addTargets(['?.bemtree.js', '?.bemhtml.js', '../../../static/?.min.js', '../../../static/?.min.css']);
   });
