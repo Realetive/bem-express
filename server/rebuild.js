@@ -30,7 +30,7 @@ function rebuild(event, file) {
   .then(function() {
     console.timeEnd('Rebuild: ' + file);
     notifier.notify({
-      title: 'ArtDocMedia',
+      title: 'bem-express',
       message: 'Build finished'
     });
   })

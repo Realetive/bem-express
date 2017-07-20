@@ -26,7 +26,7 @@ function render(req, res, data, context) {
     context: context,
     // extend with data needed for all routes
     data: Object.assign({}, {
-      view: 'page-' + data.bundle,
+      view: data.view || 'page-' + data.bundle,
       params: req.params,
       url: req._parsedUrl,
       csrf: req.csrfToken()

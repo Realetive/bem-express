@@ -4,7 +4,7 @@ block('page').content()(function() {
       block: 'header'
     },
     {
-      block: 'body'
+      block: this.data.view
     },
     {
       block: 'footer'
