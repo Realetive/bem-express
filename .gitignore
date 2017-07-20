@@ -9,7 +9,7 @@ static/index.min.*
 
 # bem
 .enb/tmp/
-*bundles*/*/*.*
-!*bundles*/*/*.bemdecl.js
-*bundles*/*/*.tmpl.bemdecl.js
-!*bundles*/.bem/*
+bundles*/*/*.*
+!bundles*/*/*.bemdecl.js
+bundles*/*/*.tmpl.bemdecl.js
+!bundles*/.bem/*

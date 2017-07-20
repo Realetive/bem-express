@@ -30,70 +30,70 @@ var fs = require('fs'),
 require('debug-http')();
 
 app
-    .disable('x-powered-by')
-    .enable('trust proxy')
-    .use(compression())
-    .use(favicon(path.join(staticFolder, 'favicon.ico')))
-    .use(serveStatic(staticFolder))
-    .use(morgan('combined'))
-    .use(cookieParser())
-    .use(bodyParser.urlencoded({ extended: true }))
-    .use(expressSession({
-        resave: true,
-        saveUninitialized: true,
-        secret: config.sessionSecret
-    }))
-    .use(passport.initialize())
-    .use(passport.session())
-    .use(csrf());
+  .disable('x-powered-by')
+  .enable('trust proxy')
+  .use(compression())
+  .use(favicon(path.join(staticFolder, 'favicon.ico')))
+  .use(serveStatic(staticFolder))
+  .use(morgan('combined'))
+  .use(cookieParser())
+  .use(bodyParser.urlencoded({ extended: true }))
+  .use(expressSession({
+    resave: true,
+    saveUninitialized: true,
+    secret: config.sessionSecret
+  }))
+  .use(passport.initialize())
+  .use(passport.session())
+  .use(csrf());
 
 // NOTE: conflicts with livereload
 isDev || app.use(slashes());
 
 passport.serializeUser(function(user, done) {
-    done(null, JSON.stringify(user));
+  done(null, JSON.stringify(user));
 });
 
 passport.deserializeUser(function(user, done) {
-    done(null, JSON.parse(user));
+  done(null, JSON.parse(user));
 });
 
 app.get('/ping/', function(req, res) {
-    res.send('ok');
+  res.send('ok');
 });
 
 app.get('/', function(req, res) {
-    render(req, res, {
-        view: 'page-index',
-        title: 'Main page',
-        meta: {
-            description: 'Page description',
-            og: {
-                url: 'https://site.com',
-                siteName: 'Site name'
-            }
-        }
-    })
+  render(req, res, {
+    view: 'page-index',
+    title: 'Main page',
+    meta: {
+      description: 'Page description',
+      og: {
+        url: 'https://site.com',
+        siteName: 'Site name'
+      }
+    }
+  })
 });
 
 isDev && require('./rebuild')(app);
 
 app.get('*', function(req, res) {
-    res.status(404);
-    return render(req, res, { view: '404' });
+  res.status(404);
+  return render(req, res, { view: '404', bundle: 'index' });
 });
 
 if (isDev) {
-    app.get('/error/', function() {
-        throw new Error('Uncaught exception from /error');
-    });
+  app.get('/error/', function() {
+    throw new Error('Uncaught exception from /error');
+  });
 
-    app.use(require('errorhandler')());
+  app.use(require('errorhandler')());
 }
 
 isSocket && fs.existsSync(port) && fs.unlinkSync(port);
 
 app.listen(port, function() {
-    isSocket && fs.chmod(port, '0777');
-    console.log('server is listening on', this.address().port);
+  isSocket && fs.chmod(port, '0777');
+  console.log('Server is listening on', this.address().port);
 });

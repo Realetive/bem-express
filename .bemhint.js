@@ -1,21 +1,21 @@
 module.exports = {
-    levels: [
-        '*.blocks'
-    ],
+  levels: [
+    '**/*.blocks'
+  ],
 
-    excludePaths: [
-        'node_modules/**'
-    ],
+  excludePaths: [
+    'node_modules/**'
+  ],
 
-    plugins: {
-        'bemhint-css-naming': {
-            techs: {
-                styl: true,
-                'post.css': true,
-                css: true
-            }
-        },
-        'bemhint-fs-naming': true,
-        'bemhint-deps-specification': true
-    }
+  plugins: {
+    'bemhint-css-naming': {
+      techs: {
+        styl: true,
+        'post.css': true,
+        css: true
+      }
+    },
+    'bemhint-fs-naming': true,
+    'bemhint-deps-specification': true
+  }
 };
