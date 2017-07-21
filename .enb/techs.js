@@ -9,11 +9,11 @@ module.exports = {
     require('postcss-each'),
     require('postcss-for'),
     require('postcss-simple-vars')(),
-    require('postcss-calc')(),
     require('postcss-nested'),
     require('pobem'),
-    require('postcss-url')({ url: 'inline' }),
-    require('autoprefixer')()
+    // require('postcss-url')({ url: 'inline' }),
+    require('postcss-cssnext')(),
+    require('postcss-reporter')()
   ],
   browserJs: require('enb-js/techs/browser-js'),
   bemtree: require('enb-bemxjst/techs/bemtree'),
