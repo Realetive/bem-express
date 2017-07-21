@@ -14,6 +14,7 @@
 ### Изменено
 
 - Обновлены npm-зависимости.
+- Вместо `autoprefixer` и `posctss-calc` — `pocstcc-next`.
 
 ## 2.0.2 - 2017.07.21
 
