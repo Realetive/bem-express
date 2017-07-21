@@ -1,7 +1,7 @@
 {
   "author": "Vladimir Grinenko",
   "name": "bem-express",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "repository": {
     "type": "git",
     "url": "git@github.com:tadatuta/bem-express.git"
