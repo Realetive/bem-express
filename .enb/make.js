@@ -12,10 +12,14 @@ module.exports = function(config) {
   var platforms = Object.keys(SETS);
 
   platforms.forEach(function(platform) {
+    
+    var levels = getSourceLevels(platform);
+    isProd || levels.push({ path: path.join('components', 'development.blocks'), check: true });
+
     config.nodes('bundles/' + platform + '.bundles/*', function(nodeConfig) {
       nodeConfig.addTechs([
         // essential
-        [techs.bem.levels, { levels: getSourceLevels(platform) }],
+        [techs.bem.levels, { levels: levels }],
         [techs.fileProvider, { target: '?.bemdecl.js' }],
         [techs.bem.deps],
         [techs.bem.files],
@@ -70,10 +74,16 @@ module.exports = function(config) {
         [techs.borschik, { source: '?.js', target: '?.min.js', minify: isProd }],
         [techs.borschik, { source: '?.css', target: '?.min.css', minify: isProd }],
 
-        [techs.fileCopy, { source: '?.min.js', target: '../../../static/?.min.js' }],
-        [techs.fileCopy, { source: '?.min.css', target: '../../../static/?.min.css' }]
+        [techs.fileCopy, { source: '?.min.js', target: '../../../static/' + platform + '/?.min.js' }],
+        [techs.fileCopy, { source: '?.min.css', target: '../../../static/' + platform + '/?.min.css' }]
       ]);
-      nodeConfig.addTargets(['?.bemtree.js', '?.bemhtml.js', '../../../static/?.min.js', '../../../static/?.min.css']);
+
+      nodeConfig.addTargets([
+        '?.bemtree.js',
+        '?.bemhtml.js',
+        '../../../static/' + platform + '/?.min.js',
+        '../../../static/' + platform + '/?.min.css'
+      ]);
     });
   });
 };
@@ -91,14 +101,16 @@ function getSourceLevels(platform) {
   });
 
   platformNames.forEach(function(name) {
+    levels.push({ path: path.join('node_modules', 'bem-components', 'design', name + '.blocks'), check: false });
+  });
+
+  platformNames.forEach(function(name) {
     levels.push({ path: path.join('components', name + '.blocks'), check: true });
   });
 
   platformNames.forEach(function(name) {
     levels.push({ path: path.join('design', name + '.blocks'), check: true });
   });
-
-  isProd || levels.push({ path: 'components/development.blocks', check: true });
 
   return levels.filter(function(level) {
     return fs.existsSync(level.path);
