@@ -13,7 +13,7 @@ function render(req, res, data, context) {
       user = req.user,
       cacheKey = req.originalUrl + (context ? JSON.stringify(context) : '') + (user ? JSON.stringify(user) : ''),
       cached = cache[cacheKey],
-      templates = getTemplates( data.bundle );
+      templates = getTemplates( data.page, data.bundle );
 
   if (useCache && cached && (new Date() - cached.timestamp < cacheTTL)) {
     return res.send(cached.html);
@@ -26,7 +26,7 @@ function render(req, res, data, context) {
     context: context,
     // extend with data needed for all routes
     data: Object.assign({}, {
-      view: data.view || 'page-' + data.bundle,
+      view: data.view || 'page-' + data.page,
       params: req.params,
       url: req._parsedUrl,
       csrf: req.csrfToken()
@@ -67,8 +67,9 @@ function evalFile(filename) {
   return nodeEval(fs.readFileSync(filename, 'utf8'), filename);
 }
 
-function getTemplates(bundleName = 'index') {
-  var pathToBundle = path.resolve('bundles/desktop.bundles', bundleName);
+function getTemplates(bundleName = 'index', level = 'desktop') {
+  console.log( level );
+  var pathToBundle = path.resolve('bundles', level + '.bundles', bundleName);
   return {
     BEMTREE: evalFile(path.join(pathToBundle, bundleName + '.bemtree.js')).BEMTREE,
     BEMHTML: evalFile(path.join(pathToBundle, bundleName + '.bemhtml.js')).BEMHTML

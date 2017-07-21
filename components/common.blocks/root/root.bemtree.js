@@ -8,18 +8,18 @@ block('root').replace()(function() {
 
   return {
     block: 'page',
-    title: data.title,
+    title: data.title || '#b_',
     favicon: '/favicon.ico',
     styles: [
       {
         elem: 'css',
-        url: '/' + data.bundle + '.min.css'
+        url: '/' + data.page + '.min.css'
       }
     ],
     scripts: [
       {
         elem: 'js',
-        url: '/' + data.bundle + '.min.js'
+        url: '/' + data.page + '.min.js'
       }
     ],
     head: [

@@ -1,101 +1,106 @@
-var techs = {
-  fileProvider: require('enb/techs/file-provider'),
-  fileMerge: require('enb/techs/file-merge'),
-  fileCopy: require('enb/techs/file-copy'),
-  borschik: require('enb-borschik/techs/borschik'),
-  postcss: require('enb-postcss/techs/enb-postcss'),
-  postcssPlugins: [
-    require('postcss-import')(),
-    require('postcss-each'),
-    require('postcss-for'),
-    require('postcss-simple-vars')(),
-    require('postcss-calc')(),
-    require('postcss-nested'),
-    require('rebem-css'),
-    require('postcss-url')({ url: 'inline' }),
-    require('autoprefixer')()
-  ],
-  browserJs: require('enb-js/techs/browser-js'),
-  bemtree: require('enb-bemxjst/techs/bemtree'),
-  bemhtml: require('enb-bemxjst/techs/bemhtml')
-},
-enbBemTechs = require('enb-bem-techs'),
-levels = [
-  { path: 'node_modules/bem-core/common.blocks', check: false },
-  { path: 'node_modules/bem-core/desktop.blocks', check: false },
-  { path: 'node_modules/bem-components/common.blocks', check: false },
-  { path: 'node_modules/bem-components/desktop.blocks', check: false },
-  { path: 'node_modules/bem-components/design/common.blocks', check: false },
-  { path: 'node_modules/bem-components/design/desktop.blocks', check: false },
-  'components/common.blocks'
-];
+var fs = require('fs'),
+    path = require('path'),
+    techs = require('./techs'),
+    SETS = {
+      'desktop': ['common', 'desktop'],
+      'touch': ['common', 'touch']
+    };
 
 var isProd = process.env.YENV === 'production';
-isProd || levels.push('components/development.blocks');
 
 module.exports = function(config) {
-  config.nodes('bundles/*.bundles/*', function(nodeConfig) {
-    nodeConfig.addTechs([
-      // essential
-      [enbBemTechs.levels, { levels: levels }],
-      [techs.fileProvider, { target: '?.bemdecl.js' }],
-      [enbBemTechs.deps],
-      [enbBemTechs.files],
+  var platforms = Object.keys(SETS);
 
-      // css
-      [techs.postcss, {
-        target: '?.css',
-        oneOfSourceSuffixes: ['post.css', 'css'],
-        plugins: techs.postcssPlugins
-      }],
+  platforms.forEach(function(platform) {
+    config.nodes('bundles/' + platform + '.bundles/*', function(nodeConfig) {
+      nodeConfig.addTechs([
+        // essential
+        [techs.bem.levels, { levels: getSourceLevels(platform) }],
+        [techs.fileProvider, { target: '?.bemdecl.js' }],
+        [techs.bem.deps],
+        [techs.bem.files],
 
-      // bemtree
-      [techs.bemtree, { sourceSuffixes: ['bemtree', 'bemtree.js'] }],
+        // css
+        [techs.postcss, {
+          target: '?.css',
+          oneOfSourceSuffixes: ['post.css', 'css'],
+          plugins: techs.postcssPlugins
+        }],
 
-      // templates
-      [techs.bemhtml, {
-        sourceSuffixes: ['bemhtml', 'bemhtml.js'],
-        forceBaseTemplates: true,
-        engineOptions: { elemJsInstances: true }
-      }],
+        // bemtree
+        [techs.bemtree, { sourceSuffixes: ['bemtree', 'bemtree.js'] }],
 
-      // client templates
-      [enbBemTechs.depsByTechToBemdecl, {
-        target: '?.tmpl.bemdecl.js',
-        sourceTech: 'js',
-        destTech: 'bemhtml'
-      }],
-      [enbBemTechs.deps, {
-        target: '?.tmpl.deps.js',
-        bemdeclFile: '?.tmpl.bemdecl.js'
-      }],
-      [enbBemTechs.files, {
-        depsFile: '?.tmpl.deps.js',
-        filesTarget: '?.tmpl.files',
-        dirsTarget: '?.tmpl.dirs'
-      }],
-      [techs.bemhtml, {
-        target: '?.browser.bemhtml.js',
-        filesTarget: '?.tmpl.files',
-        sourceSuffixes: ['bemhtml', 'bemhtml.js'],
-        engineOptions: { elemJsInstances: true }
-      }],
+        // templates
+        [techs.bemhtml, {
+          sourceSuffixes: ['bemhtml', 'bemhtml.js'],
+          forceBaseTemplates: true,
+          engineOptions: { elemJsInstances: true }
+        }],
 
-      // js
-      [techs.browserJs, { includeYM: true }],
-      [techs.fileMerge, {
-        target: '?.js',
-        sources: ['?.browser.js', '?.browser.bemhtml.js']
-      }],
+        // client templates
+        [techs.bem.depsByTechToBemdecl, {
+          target: '?.tmpl.bemdecl.js',
+          sourceTech: 'js',
+          destTech: 'bemhtml'
+        }],
+        [techs.bem.deps, {
+          target: '?.tmpl.deps.js',
+          bemdeclFile: '?.tmpl.bemdecl.js'
+        }],
+        [techs.bem.files, {
+          depsFile: '?.tmpl.deps.js',
+          filesTarget: '?.tmpl.files',
+          dirsTarget: '?.tmpl.dirs'
+        }],
+        [techs.bemhtml, {
+          target: '?.browser.bemhtml.js',
+          filesTarget: '?.tmpl.files',
+          sourceSuffixes: ['bemhtml', 'bemhtml.js'],
+          engineOptions: { elemJsInstances: true }
+        }],
 
-      // borschik
-      [techs.borschik, { source: '?.js', target: '?.min.js', minify: isProd }],
-      [techs.borschik, { source: '?.css', target: '?.min.css', minify: isProd }],
+        // js
+        [techs.browserJs, { includeYM: true }],
+        [techs.fileMerge, {
+          target: '?.js',
+          sources: ['?.browser.js', '?.browser.bemhtml.js']
+        }],
 
-      [techs.fileCopy, { source: '?.min.js', target: '../../../static/?.min.js' }],
-      [techs.fileCopy, { source: '?.min.css', target: '../../../static/?.min.css' }]
-    ]);
+        // borschik
+        [techs.borschik, { source: '?.js', target: '?.min.js', minify: isProd }],
+        [techs.borschik, { source: '?.css', target: '?.min.css', minify: isProd }],
 
-    nodeConfig.addTargets(['?.bemtree.js', '?.bemhtml.js', '../../../static/?.min.js', '../../../static/?.min.css']);
+        [techs.fileCopy, { source: '?.min.js', target: '../../../static/?.min.js' }],
+        [techs.fileCopy, { source: '?.min.css', target: '../../../static/?.min.css' }]
+      ]);
+      nodeConfig.addTargets(['?.bemtree.js', '?.bemhtml.js', '../../../static/?.min.js', '../../../static/?.min.css']);
+    });
   });
 };
+
+function getSourceLevels(platform) {
+  var platformNames = SETS[platform],
+      levels = [];
+
+  platformNames.forEach(function(name) {
+    levels.push({ path: path.join('node_modules', 'bem-core', name + '.blocks'), check: false });
+  });
+
+  platformNames.forEach(function(name) {
+    levels.push({ path: path.join('node_modules', 'bem-components', name + '.blocks'), check: false });
+  });
+
+  platformNames.forEach(function(name) {
+    levels.push({ path: path.join('components', name + '.blocks'), check: true });
+  });
+
+  platformNames.forEach(function(name) {
+    levels.push({ path: path.join('design', name + '.blocks'), check: true });
+  });
+
+  isProd || levels.push({ path: 'components/development.blocks', check: true });
+
+  return levels.filter(function(level) {
+    return fs.existsSync(level.path);
+  });
+}
