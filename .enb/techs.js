@@ -11,7 +11,7 @@ module.exports = {
     require('postcss-simple-vars')(),
     require('postcss-calc')(),
     require('postcss-nested'),
-    require('rebem-css'),
+    require('pobem'),
     require('postcss-url')({ url: 'inline' }),
     require('autoprefixer')()
   ],
