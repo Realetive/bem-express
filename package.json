@@ -65,7 +65,7 @@
     "postcss-nested": "^2.0.4",
     "postcss-reporter": "^4.0.0",
     "postcss-simple-vars": "^4.0.0",
-    "postcss-url": "^6.3.1",
+    "postcss-url": "^7.1.1",
     "serve-favicon": "^2.4.3",
     "serve-static": "^1.12.3",
     "stylelint": "^8.0.0",
