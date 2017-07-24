@@ -12,7 +12,9 @@ module.exports = function(config) {
   var platforms = Object.keys(SETS);
 
   platforms.forEach(function(platform) {
-    
+    pathToStatic = path.resolve( 'static', platform );
+    fs.existsSync(pathToStatic) || fs.mkdirSync(pathToStatic);
+
     var levels = getSourceLevels(platform);
     isProd || levels.push({ path: path.join('components', 'development.blocks'), check: true });
 
